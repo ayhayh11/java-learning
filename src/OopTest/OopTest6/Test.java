@@ -1,4 +1,4 @@
-package com.example.OopTest.OopTest6;
+package OopTest.OopTest6;
 
 public class Test {
     public static void main(String[] args) {
@@ -7,7 +7,7 @@ public class Test {
         要求2:大二期间张三体重增加了10kg
         要求3:大三期间张三减肥成功，身高增加2cm，体重减少3kg
         要求4:打印大学毕业之后，张三的所有信息*/
-        Student s=new Student();
+        com.example.OopTest.OopTest6.Student s=new com.example.OopTest.OopTest6.Student();
         s.setname("张三");
         s.setAge(18);
         s.setHeight(183);

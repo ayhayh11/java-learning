@@ -1,4 +1,4 @@
-package com.example.OopTest.ooptest2;
+package OopTest.ooptest2;
 
 public class Test {
     public static void main(String[] args) {
