@@ -3,6 +3,7 @@ package fightinggame.Ui;
 import fightinggame.domain.User;
 
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.Scanner;
 
 public class login {
@@ -29,7 +30,64 @@ public class login {
     }
 
     public void login(ArrayList<User> list) {
-        System.out.println("开始游玩吧~");
+        System.out.println("欢迎英雄归来");
+       /* 用户名如果未注册提示：用户名未注册，请先注册
+
+     	用户被锁定提示：用户xxx已经锁定，请联系客服：XXX-XXXXX
+
+     	验证码错误提示：验证码输入错误，请重新输入，并生成一个新的验证码
+
+     	判断用户名和密码是否正确，有3次机会，满3次账户锁定。*/
+        System.out.println("请输入用户名：");
+        Scanner sc = new Scanner(System.in);
+        String username = sc.next();
+        if (!contains(list, username)) {
+            System.out.println("用户名未注册，请先注册");
+            return;
+        }
+        int findindex = findindex(list, username);
+        User u = list.get(findindex);
+        if (!u.isStatus()) {
+            System.out.println("用户" + u.getUsername() + "已经锁定，请联系客服：XXX-XXXXX");
+            return;
+        }
+        //用户输入密码和验证码进行验证；
+        String rightpassword = u.getPassword();
+        for (int i = 0; i < 3; i++) {
+            System.out.println("请输入密码");
+            String password = sc.next();
+            //每一次都要验证码
+            while (true) {
+                String rightcode = getCode();
+                System.out.println("正确的验证码:" + rightcode);
+                System.out.println("请输入验证码：");
+                String code = sc.next();
+                if (rightcode.equalsIgnoreCase(code)) {
+                    System.out.println("验证码输入正确");
+                    break;
+                } else {
+                    System.out.println("验证码输入错误，请重新输入");
+                    continue;
+                }
+            }
+            if (password.equals(rightpassword)) {
+                System.out.println("登录成功，游戏启动");
+                FightingGame fg = new FightingGame();
+                fg.gamestart(username);
+                return;
+            }
+            else{
+                System.out.println("密码输入错误，请重新输入");
+                if (i==2) {
+                    u.setStatus( false);
+                    System.out.println("用户" + u.getUsername() + "已经锁定，请联系客服：XXX-XXXXX");
+                    return;
+                }
+                else {
+                    System.out.println("密码输入错误，还有" + (2 - i) + "次机会");
+                }
+            }
+        }
     }
 
     public void register(ArrayList<User> list) {
@@ -54,7 +112,7 @@ public class login {
                 System.out.println("只能由字母、数字组成，不能是纯数字");
                 continue;
             }
-            if(contains(list,username)){
+            if (contains(list, username)) {
                 System.out.println("用户名已存在请重新输入");
                 continue;
             }
@@ -70,23 +128,24 @@ public class login {
             System.out.println("请再次输入密码：");
             String password2 = sc.next();
             //   校验密码
-            if(!password1.equals(password2)){
+            if (!password1.equals(password2)) {
                 System.out.println("密码不一致请重新输入");
                 continue;
             }
-            if(!checklen(8, 3, password1)){
+            if (!checklen(8, 3, password1)) {
                 System.out.println("密码格式错误请重新输入");
                 continue;
             }
-            if(checkpassword(password1)){
+            if (checkpassword(password1)) {
                 System.out.println("密码格式错误请重新输入");
+                continue;
             }
             u.setPassword(password1);
             break;
         }
 
         //4.将用户添加到集合当中
-        list.add( u);
+        list.add(u);
         System.out.println("注册成功");
 
 
@@ -98,13 +157,12 @@ public class login {
         int othercount = 0;
         for (int i = 0; i < user.length(); i++) {
             char c = user.charAt(i);
-            if (c >= 'a' && c <= 'z') {
+            if (c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z') {
                 charcount++;
             }
-            if (c >= '0' && c <= '9') {
+           else  if (c >= '0' && c <= '9') {
                 numcount++;
-            }
-            if (c >= 'A' && c <= 'Z') {
+            } else {
                 othercount++;
             }
         }
@@ -134,5 +192,46 @@ public class login {
 
         }
         return false;
+    }
+
+    //获取验证码
+    public String getCode() {
+       /* 长度为5
+
+     	由4位大写或者小写字母和1位数字组成，同一个字母可重复
+
+     	数字可以出现在任意位置*/
+        ArrayList<Character> list = new ArrayList<>();
+        for (int i = 0; i < 26; i++) {
+            list.add((char) (i + 'a'));
+            list.add((char) (i + 'A'));
+        }
+        Random r = new Random();
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < 4; i++) {
+            int index = r.nextInt(list.size());
+            char c = list.get(index);
+            sb.append(c);
+        }
+        sb.append(r.nextInt(10));
+        char[] arr = sb.toString().toCharArray();
+        int i = r.nextInt(arr.length);
+        char temp = arr[i];
+        arr[i] = arr[arr.length - 1];
+        arr[arr.length - 1] = temp;
+        String code = new String(arr);
+        return code;
+
+    }
+
+    //找到用户
+    public int findindex(ArrayList<User> list, String username) {
+        for (int i = 0; i < list.size(); i++) {
+            User u = list.get(i);
+            if (u.getUsername().equals(username)) {
+                return i;
+            }
+        }
+        return -1;
     }
 }

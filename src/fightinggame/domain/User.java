@@ -17,6 +17,23 @@ public class User {
         this.password = password;
         this.username = username;
     }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public boolean isStatus() {
+        return status;
+    }
+
+    public void setStatus(boolean status) {
+        this.status = status;
+    }
+
     public String createId() {
         StringBuilder sb = new StringBuilder("fight");
         Random random = new Random();
